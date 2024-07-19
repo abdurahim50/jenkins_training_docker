@@ -1,4 +1,6 @@
 # jenkins_training_docker
+
+### Dev -----> Github ---------> Build -----------> Test ---------> Deploy <-------- Customer
 --------------------------------------------------------------------------
 # Deploying a simple Nodejs app using Jenkins Master-slave Architecture CI/CD.
 # Table of Contents
