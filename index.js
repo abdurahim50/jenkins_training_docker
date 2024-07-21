@@ -1,5 +1,6 @@
 const http = require('http');
-const chalk = require('chalk'); // Import the chalk package
+// const chalk = require('chalk'); // Import the chalk package
+import chalk from 'chalk';
 
 const hostname = '0.0.0.0';
 const port = 3000;

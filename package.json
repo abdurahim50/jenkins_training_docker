@@ -1,15 +1,13 @@
 {
   "name": "my-node-server",
   "version": "1.0.0",
-  "description": "A simple Node.js server with colored console output and HTML response.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "type": "module",
   "dependencies": {
-    "chalk": "^5.0.0" 
-  },
-  "author": "Abdurahim50",
-  "license": "MIT"
+    "chalk": "^5.0.0"
+  }
 }
 
