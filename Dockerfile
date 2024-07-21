@@ -1,5 +1,5 @@
 # Use official Node.js image
-FROM node:14
+FROM node:18
 
 # Set working directory
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copy app source code
-COPY index.js ./
+COPY . .
 
 # Expose port
 EXPOSE 3000
