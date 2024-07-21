@@ -112,15 +112,67 @@ Connect each node to the master.
 
 - Go to your Jenkins dashboard.
 - Click on "New Item".
-- Enter the name docker-build.
+- Enter the name **dockerProjectToBuild**.
 - Choose "Freestyle project".
 - Click "OK".
+  
 2. ### Configure Job
-
-- Under "General", restrict where this project can be run by specifying the label build.
+  
+- Under "General", restrict where this project can be run by specifying the label **mybuild**.
 - Under "Source Code Management", choose "Git" and provide the repository URL.
 - Set the branch to build, usually */main or */master.
-3 ### Build Triggers
+  
+3. ### Build Triggers
 
 - Check "Poll SCM".
-- Set the schedule to * * * * * to poll every minute.
+- Set the schedule to [* * * * *]to poll every minute.
+  
+4. ### Build Steps
+- Add "Execute shell" with the following scrip:
+  
+```
+  # Define variables
+IMAGE_NAME="abdurahim/nodejs-app"
+IMAGE_TAG="v${BUILD_NUMBER}"
+
+# Build the Docker image
+echo "Building the Docker image..."
+sudo docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+
+# Tag the Docker image
+echo "Tagging the Docker image..."
+sudo docker tag ${IMAGE_NAME}:${IMAGE_TAG} docker.io/${IMAGE_NAME}:${IMAGE_TAG}
+
+# Push the Docker image to DockerHub
+echo "Pushing the Docker image to DockerHub..."
+sudo docker push docker.io/${IMAGE_NAME}:${IMAGE_TAG}
+```
+## Step 3: Create docker-deploy Job on Node-2
+1. ### Create New Job
+
+- Go to your Jenkins dashboard.
+- Click on "New Item".
+- Enter the name **dockerProjectToTest**.
+- Choose "Freestyle project".
+- Click "OK".
+  
+2. ### Configure Job
+- Under "General", restrict where this project can be run by specifying the label **mytest**.
+  
+3. ### Build Triggers
+
+- Set it to "Build after other projects are built".
+- Specify **dockerProjectTobuild**.
+  
+4. ### Build Steps
+
+Add "Execute shell" with the following script:
+```
+# Terminate running container
+sudo docker rm -f myweb
+
+# Run the Docker container
+sudo docker run  --name myweb -dit -p 3000:3000 abdurahim/scienteh-web:v1
+```
+
+
