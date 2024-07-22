@@ -26,7 +26,7 @@ const server = http.createServer((req, res) => {
           padding: 10px;
           border: 1px solid darkblue;
           border-radius: 5px;
-          background-color: white;
+          background-color: green;
         }
       </style>
     </head>
