@@ -171,8 +171,64 @@ Add "Execute shell" with the following script:
 # Terminate running container
 sudo docker rm -f myweb
 
+# Pull the image from hub.docker.io
+sudo docker pull abdurahim/scienteh-web:v1
+
 # Run the Docker container
-sudo docker run  --name myweb -dit -p 3000:3000 abdurahim/scienteh-web:v1
+sudo docker run --name myweb -d -p 3000:3000 abdurahim/scienteh-web:v1
+
+# Wait for a few seconds to allow the container to start
+sleep 10
+
+# Test if the service is available
+sudo sh -c  "curl --silent --fail http://54.163.216.63:3000 | grep Hello"
+sudo echo $?
+if [ $? == 0 ]
+then
+    echo "service up"
+    exit 0
+else
+    echo "Service is down"
+    exit 1
+fi
+
 ```
 
+## Step 4: Add slave3 Node
+Add Slave Node
+
+- Go to your Jenkins dashboard.
+- Click on "Manage Jenkins" > "Manage Nodes and Clouds" > "New Node".
+- Enter the name slave3-deploy and select "Permanent Agent", then click "OK".
+  
+### Configure Slave Node
+
+- Set "Remote root directory" to a directory on the slave machine (e.g., /home/jenkins).
+- Set "Labels": Assign the label deploy-k8s to this node.
+- Choose "Launch method": typically "Launch agent via SSH".
+- Provide the SSH credentials and configuration for connecting to this node.
+- Ensure that this node has the necessary tools installed for interacting with Kubernetes (e.g., kubectl, Docker).
+
+## Step 5: Create **dockerProjectToProduction** Job on slave3
+Create New Job
+
+- Go to "New Item" in Jenkins.
+- Enter the name **dockerProjectToProduction**.
+- Choose "Freestyle project" and click "OK".
+  
+### Configure Job
+
+- Under "General", check "Restrict where this project can be run" and specify the label **mykubernetes**.
+### Build Triggers
+
+- Check "Build after other projects are built".
+- Specify **dockerProjectTobuild**.
+  
+### Build Steps
+Add "Execute shell" with the following script:
+```
+kubectl delete deployment myweb --kubeconfig /home/ec2-user/admin.conf
+kubectl create deployment myweb --image=abdurahim/scienteh-web:v1 --kubeconfig /home/ec2-user/admin.conf
+
+```
 
