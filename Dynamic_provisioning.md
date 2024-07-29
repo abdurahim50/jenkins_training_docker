@@ -23,9 +23,82 @@ sudo usermod -aG docker ec2-user
 
 Configure Docker to listen on a TCP port (e.g., 2375) by editing the Docker configuration file.
 There are two ways to achieve this:
-**1. Edit the Docker Service File:**
+
+### Method 1. Edit the Docker Service File:
 Open the Docker service file with vim:
 ```
 sudo vim /usr/lib/systemd/system/docker.service
 ```
-Modify the ExecStart line to include -H tcp://0.0.0.0:2375
+
+* Modify the ExecStart line to include -H tcp://0.0.0.0:2375
+```
+  ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H fd:// --containerd=/run/containerd/containerd.sock
+```
+
+* Reload the systemd configuration
+```
+sudo systemctl daemon-reload
+```
+
+* Restart Docker  
+```
+sudo systemctl restart docker
+```
+### Method 2: Configuring Docker Daemon via JSON File
+* Edit the Docker Daemon Configuration File:
+```
+sudo vim /etc/docker/daemon.json
+```
+
+* Add the following configuration:
+```
+{
+  "hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"]
+}
+```
+
+* Restart Docker to apply changes
+```
+sudo systemctl restart docker
+```
+- Editing the Systemd Service File: Provides direct command-line control over Docker startup options but can be more prone to errors and may be overwritten during system updates.
+
+- Editing daemon.json: Offers a structured and standardized way to configure Docker, is generally easier to manage, and is recommended for persistent configurations.
+
+
+## 2. Install the Docker Plugin in Jenkins
+Navigate to Jenkins Plugin Manager:
+
+- Go to Manage Jenkins > Manage Plugins.
+- Go to the Available tab, search for Docker, and install the Docker Commons and Docker Pipeline plugins.
+  
+ ###  Configure Docker Cloud in Jenkins
+Access Jenkins Configuration:
+- Go to Manage Jenkins > Manage Clouds > Configure Clouds.
+- Click Add a new cloud and select Docker.
+- Give a name and create
+  
+**Configure Docker Cloud Settings:**
+
+- **Click on Docker Cloud details**
+
+- Docker host URL: Specify the Docker daemon URL running on your AWS instance (e.g., tcp://<EC2_INSTANCE_PUBLIC_IP>:2375).
+
+- Server credentials: If your Docker daemon requires authentication, add Docker host credentials. For unsecured TCP access (not recommended), you can leave credentials empty.
+- Enable.
+
+- **Click Docker Agent templates:** Add Docker templates for the containers you want to launch as agents. Click Add under Docker Templates.
+  
+- Labels: Assign labels to identify the Docker container agents (e.g., build-agent).
+
+- Docker Image: Specify the Docker image for your agent (e.g., maven:3.6-jdk-11).
+
+- Remote FS Root: Specify the file system root inside the container (e.g., /home/jenkins).
+
+- Container Settings: Configure container settings such as environment variables, commands, and resource limits.
+
+**Configure Docker Template Settings:**
+
+- Container Cap: Define the maximum number of containers to run simultaneously.
+
+- Container Configuration: Set up the Docker container configuration, such as volumes and environment variables. Ensure that the container has the required tools and configurations for your Jenkins jobs.
