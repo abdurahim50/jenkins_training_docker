@@ -90,12 +90,25 @@ Access Jenkins Configuration:
 - **Click Docker Agent templates:** Add Docker templates for the containers you want to launch as agents. Click Add under Docker Templates.
   
 - Labels: Assign labels to identify the Docker container agents (e.g., build-agent).
+- Click **Enable**
 
 - Docker Image: Specify the Docker image for your agent (e.g., maven:3.6-jdk-11).
 
+- Container Settings: Configure container settings such as environment variables, commands, and resource limits.
+
 - Remote FS Root: Specify the file system root inside the container (e.g., /home/jenkins).
 
-- Container Settings: Configure container settings such as environment variables, commands, and resource limits.
+- Usage: Chose the option according to your need. "Only build jobs with labels expression matching this node"
+
+- Connect method: Chose the option according to your need. "Use configured SSH credentials" . If you chose SSH, the follow the prerequisites:
+  
+    -  The docker container's mapped SSH port, typically a port on the docker host, has to be accessible over network from the master.
+    -  Docker image must have sshd installed.
+    -  Docker image must have Java installed.
+    - Log in details configured as per ssh-slaves plugin.
+        - Under SSH Credentials, select jenkins and add your slave image username and passwd/the ssh pub key.
+        - Host Key Verification Strategy: Non verifying verification strategy.
+- Pull strategy: choose according to your need. If you using versioning in your image, the choose **Pull all image everytime** or else **Never pull**
 
 **Configure Docker Template Settings:**
 
